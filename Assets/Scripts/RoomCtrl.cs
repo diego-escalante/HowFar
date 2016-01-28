@@ -11,12 +11,18 @@ public class RoomCtrl : MonoBehaviour {
   private Text display;                     //The countdown display.
   private static GameObject roomPrefab;     //The room prefab.
 
+  // private static SoundCtrl sCtrl;           //The sound controller.
+  private AudioSource aSource;
+  public AudioClip[] ticSounds = new AudioClip[8];
+
   //===================================================================================================================
 
   private void Awake() {
     TimeCtrl.Tick += tick;
     display = GetComponentInChildren<Text>();
+    aSource = GetComponentInChildren<AudioSource>();
     if(roomPrefab == null) roomPrefab = Resources.Load("Room", typeof(GameObject)) as GameObject;
+    // if(sCtrl == null) sCtrl = GameObject.FindWithTag("Sound Controller").GetComponent<SoundCtrl>();
   }
 
   //===================================================================================================================
@@ -52,6 +58,7 @@ public class RoomCtrl : MonoBehaviour {
     display.text = text;
     
     //Todo: play a sound.
+    playTic(currentTime.Second % 2 == 0);
   }
 
   //===================================================================================================================
@@ -72,6 +79,12 @@ public class RoomCtrl : MonoBehaviour {
     display.text = "000:00:00:00";
   }
 
+  //===================================================================================================================
+
+  private void playTic(bool isEven) {
+    int i = UnityEngine.Random.Range(1, 5) * (isEven ? 1 : 2) - 1;
+    aSource.PlayOneShot(ticSounds[i]);
+  }
   //===================================================================================================================
 
   public void setEndTime(DateTime newTime, DateTime currentTime){
