@@ -3,59 +3,48 @@ using System.Collections;
 
 public class SoundCtrl : MonoBehaviour {
   
-  public AudioSource humSound;
-  public AudioSource windSound;
-  public AudioSource graveSound;
+  public AudioSource humSound;    //Ambience sound: hum
+  public AudioSource windSound;   //Ambience sound: wind
+  public AudioSource howlSound;   //Ambience sound: howl
 
+  public AudioSource metalSound;  //Step sound: metal
+  public AudioSource snowSound;   //Step sound: snow
 
-  public AudioSource metalSound;
-  public AudioSource snowSound;
+  private float entry = -4;       //Point in the timeline dividing hum and wind, metal and snow.
+  private float far = -256;       //Point in the timeline dividing wind and howl.
+  private float delta = 32;       //Used between points to smoothly fade between sounds.
+  
+  private bool isInside = true;   //Are we inside or outside? Metal or snow?
 
-  private MyMovement move;
+  private MoveCtrl move;          //The movement script, for step sound queues.
 
   //===================================================================================================================
 
   private void Start() {
-    move = GameObject.FindWithTag("Player").GetComponent<MyMovement>();
-    // lastStep = transform.position;
+    move = GameObject.FindWithTag("Player").GetComponent<MoveCtrl>();
   }
 
   //===================================================================================================================
 
   private void Update() {
 
+    //Current position in the timeline.
+    float z = transform.position.z;
+
+    //Ambient sounds.
+    humSound.volume = Mathf.Clamp(((z - entry)/delta), 0, 1);
+    howlSound.volume = Mathf.Clamp((1-(z - far)/delta), 0, 1);
+    if(z >= entry) windSound.volume = Mathf.Clamp((1-(z - entry)/delta), 0, 1);
+    else windSound.volume = Mathf.Clamp(((z - far)/delta), 0, 1);
+
     //Walking sounds.
-    if(move.IsMoving && metalSound.volume == 0) StartCoroutine(FadeIn(metalSound));
-    else if(!move.IsMoving && metalSound.volume == 1) StartCoroutine(FadeOut(metalSound));
-  }
+    isInside = z >= entry;
 
-  //===================================================================================================================
+    metalSound.volume = 0;
+    snowSound.volume = 0;
 
-  private IEnumerator FadeIn(AudioSource aSource){
-    float elapsedTime = 0;
-    float duration = 0.25f;
-
-    while(elapsedTime < duration) {
-      elapsedTime += Time.deltaTime;
-
-      aSource.volume = elapsedTime/duration;
-
-      yield return null;
-    }
-  }
-
-  //===================================================================================================================
-
-    private IEnumerator FadeOut(AudioSource aSource){
-    float elapsedTime = 0;
-    float duration = 0.25f;
-
-    while(elapsedTime < duration) {
-      elapsedTime += Time.deltaTime;
-
-      aSource.volume = 1 - elapsedTime/duration;
-
-      yield return null;
-    }
+    if(!move.IsMoving) return;
+    if(isInside) metalSound.volume = 1;
+    else snowSound.volume = 1;
   }
 }

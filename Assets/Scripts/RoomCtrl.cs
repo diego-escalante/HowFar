@@ -5,24 +5,25 @@ using System;
 
 public class RoomCtrl : MonoBehaviour {
 
-  private int roomNumber;                   //The room number.
-  private DateTime endTime;                 //The end time for this timer.
-  private bool timeReached = false;         //Has this timer reached 0?
-  private Text display;                     //The countdown display.
-  private static GameObject roomPrefab;     //The room prefab.
+  private int roomNumber;                           //The room number.
+  private DateTime endTime;                         //The end time for this timer.
+  private bool timeReached = false;                 //Has this timer reached 0?
+  private Text display;                             //The countdown display.
+  private static GameObject roomPrefab;             //The room prefab.
 
-  // private static SoundCtrl sCtrl;           //The sound controller.
-  private AudioSource aSource;
-  public AudioClip[] ticSounds = new AudioClip[8];
+  private AudioSource aSource;                      //Audio source for the tic tocs.
+  public AudioClip[] ticSounds = new AudioClip[8];  //Said tic tocs.
 
   //===================================================================================================================
 
   private void Awake() {
+    //Subscribe to the second game timer.
     TimeCtrl.Tick += tick;
+
+    //Get the components and object needed.
     display = GetComponentInChildren<Text>();
     aSource = GetComponentInChildren<AudioSource>();
     if(roomPrefab == null) roomPrefab = Resources.Load("Room", typeof(GameObject)) as GameObject;
-    // if(sCtrl == null) sCtrl = GameObject.FindWithTag("Sound Controller").GetComponent<SoundCtrl>();
   }
 
   //===================================================================================================================
