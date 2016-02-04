@@ -684,6 +684,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 79edac36d4dc0b94082eaa6696eb6ecf, type: 3}
   - {fileID: 8300000, guid: d36273a9d2f081641b5e9e32b7a29524, type: 3}
   - {fileID: 8300000, guid: 7184a9feb056af947bd23ea5f4498f33, type: 3}
+  doorDing: {fileID: 8300000, guid: 1d4234ebb806a734dac7414abbd86374, type: 3}
 --- !u!222 &22218312
 CanvasRenderer:
   m_ObjectHideFlags: 1

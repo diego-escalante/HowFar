@@ -67,7 +67,7 @@ public class UICtrl : MonoBehaviour {
     yield return new WaitForSeconds(2);
 
     StartCoroutine(FadeIn(bg, 2, true));
-    yield return new WaitForSeconds(3);
+    yield return new WaitForSeconds(2.5f);
 
     //Give control to the player.
     GameObject.FindWithTag("Player").GetComponent<MoveCtrl>().enabled = true;

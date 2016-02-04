@@ -34,7 +34,7 @@ public class GameCtrl : MonoBehaviour {
 
     //Set up current time and end time.
     DateTime currentTime = DateTime.Parse(currentDate);
-    // currentTime = new DateTime(2018, 1, 20, 23, 30, 55);
+    // currentTime = new DateTime(2016, 5, 8, 15, 14, 40);
     DateTime startTime = new DateTime(1991, 5, 8, 15, 15, 0);
 
     //Get the room prefab.
@@ -99,13 +99,12 @@ public class GameCtrl : MonoBehaviour {
 
     while(elapsedTime < duration) {
       elapsedTime += Time.deltaTime;
-      blur.blurSize = Mathf.Lerp(initialValue, finalValue, elapsedTime/duration);
-      AudioListener.volume = Mathf.Lerp(initialVolValue, finalVolValue, elapsedTime/duration);
+      float t = elapsedTime/duration;
+      blur.blurSize = Mathf.Lerp(initialValue, finalValue, t);
+      AudioListener.volume = Mathf.Lerp(initialVolValue, finalVolValue, t);
       yield return null;
     }
 
     if(!paused) blur.enabled = false;
   }
-
-
 }

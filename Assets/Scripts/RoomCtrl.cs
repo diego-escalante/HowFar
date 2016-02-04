@@ -11,8 +11,9 @@ public class RoomCtrl : MonoBehaviour {
   private Text display;                             //The countdown display.
   private static GameObject roomPrefab;             //The room prefab.
 
-  private AudioSource aSource;                      //Audio source for the tic tocs.
+  private AudioSource aSource;                      //Audio source for the tic tocs and door ding.
   public AudioClip[] ticSounds = new AudioClip[8];  //Said tic tocs.
+  public AudioClip doorDing;                        //Said door ding.
 
   //===================================================================================================================
 
@@ -76,7 +77,10 @@ public class RoomCtrl : MonoBehaviour {
 
     //Open this room's door.
     if(instantly) GetComponentInChildren<Animator>().SetTrigger("AlreadyOpen");
-    else GetComponentInChildren<Animator>().SetTrigger("Open");
+    else {
+      GetComponentInChildren<Animator>().SetTrigger("Open");
+      aSource.PlayOneShot(doorDing);
+    }
     display.text = "000:00:00:00";
   }
 
