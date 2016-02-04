@@ -22,29 +22,49 @@ public class MoveCtrl : MonoBehaviour {
 
   //===================================================================================================================
 
-  private void OnDisable() {
-    rb.velocity = Vector3.zero;
+  private void OnEnable() {
+    InputCtrl.mouseXAxis += xCamMove;
+    InputCtrl.mouseYAxis += yCamMove;
+    InputCtrl.moveAxes += move;
   }
 
   //===================================================================================================================
 
-  private void Update() {
+  private void OnDisable() {
+    rb.velocity = Vector3.zero;
+    InputCtrl.mouseXAxis -= xCamMove;
+    InputCtrl.mouseYAxis -= yCamMove;
+    InputCtrl.moveAxes -= move;
+  }
 
+  //===================================================================================================================
+
+  private void move(float x, float z) {
     //Get inputs and move.
-    Vector3 direction = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+    Vector3 direction = new Vector3(x, 0, z).normalized;
     rb.velocity = transform.TransformDirection(direction * speed);
-    isMoving = Vector3.zero == direction ? false : true;
 
+    //If we are moving... (Also, update isMoving)
+    if((isMoving = Vector3.zero != direction)) {
     //Keep me in the desired x-range.
     Vector3 newPos = transform.position;
     newPos.x = Mathf.Clamp(newPos.x, -2.5f, 2.5f);
     transform.position = newPos;
+    }
+  }
 
+  //===================================================================================================================
+
+  private void xCamMove(float f){
     //Rotate my body.
-    transform.Rotate(0, Input.GetAxis("Mouse X")*lookSensitivity , 0);
+    transform.Rotate(0, f*lookSensitivity , 0);
+  }
 
+  //===================================================================================================================
+
+  private void yCamMove(float f){
     //Tilt my head.
-    float newAngle = -Input.GetAxis("Mouse Y")*lookSensitivity + head.eulerAngles.x;
+    float newAngle = -f*lookSensitivity + head.eulerAngles.x;
     if(newAngle < 270 && newAngle > 180) newAngle = 270;
     else if(newAngle > 90 && newAngle <= 180) newAngle = 90;
     head.localEulerAngles = new Vector3(newAngle, 0, 0);
