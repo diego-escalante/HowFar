@@ -675,6 +675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed5edfbd5ffa81249997ae6f6503832e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomPrefab: {fileID: 102954}
   ticSounds:
   - {fileID: 8300000, guid: e352e7dd49c196f4d84ec4b24bbc03b3, type: 3}
   - {fileID: 8300000, guid: 6f387a3b8fc3ce6449b9444ea0fa0531, type: 3}
@@ -780,6 +781,10 @@ Prefab:
       propertyPath: m_Name
       value: Doors
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: roomPrefab
+      value: 
+      objectReference: {fileID: 102954}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 102954}

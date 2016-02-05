@@ -6,10 +6,10 @@ using System.Text.RegularExpressions;
 
 public class GameCtrl : MonoBehaviour {
 
+  [SerializeField] private GameObject roomPrefab;
   private bool isPaused = false;
   private MoveCtrl move;
   private UnityStandardAssets.ImageEffects.BlurOptimized blur;
-  // private AudioListener audio;
 
   //===================================================================================================================
 
@@ -17,7 +17,7 @@ public class GameCtrl : MonoBehaviour {
 
     WWW www;
 
-    //Try to GET the current time from the internet.
+    // Try to GET the current time from the internet.
     do {
       www = new WWW("http://www.timeapi.org/utc/now");
       yield return www;
@@ -27,18 +27,14 @@ public class GameCtrl : MonoBehaviour {
     GameObject g = GameObject.FindWithTag("Player");
     move = g.GetComponent<MoveCtrl>();
     blur = g.GetComponentInChildren<UnityStandardAssets.ImageEffects.BlurOptimized>();
-    // audio = g.GetComponentInChildren<AudioListener>();
 
     // Prepare received data.
     string currentDate = www.text.Substring(0, www.text.IndexOf("+"));
 
     //Set up current time and end time.
     DateTime currentTime = DateTime.Parse(currentDate);
-    // currentTime = new DateTime(2016, 5, 8, 15, 14, 40);
+    // DateTime currentTime = new DateTime(2016, 5, 8, 15, 14, 40);
     DateTime startTime = new DateTime(1991, 5, 8, 15, 15, 0);
-
-    //Get the room prefab.
-    GameObject roomPrefab = Resources.Load("Room", typeof(GameObject)) as GameObject;
 
     //Build the first room.
     GameObject r = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity) as GameObject;

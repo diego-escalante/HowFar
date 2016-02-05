@@ -5,15 +5,15 @@ using System;
 
 public class RoomCtrl : MonoBehaviour {
 
-  private int roomNumber;                           //The room number.
-  private DateTime endTime;                         //The end time for this timer.
-  private bool timeReached = false;                 //Has this timer reached 0?
-  private Text display;                             //The countdown display.
-  private static GameObject roomPrefab;             //The room prefab.
+  private int roomNumber;                                 //The room number.
+  private DateTime endTime;                               //The end time for this timer.
+  private bool timeReached = false;                       //Has this timer reached 0?
+  private Text display;                                   //The countdown display.
+  [SerializeField] private GameObject roomPrefab;         //The room prefab.
 
-  private AudioSource aSource;                      //Audio source for the tic tocs and door ding.
-  public AudioClip[] ticSounds = new AudioClip[8];  //Said tic tocs.
-  public AudioClip doorDing;                        //Said door ding.
+  private AudioSource aSource;                            //Audio source for the tic tocs and door ding.
+  public AudioClip[] ticSounds = new AudioClip[8];        //Said tic tocs.
+  public AudioClip doorDing;                              //Said door ding.
 
   //===================================================================================================================
 
@@ -24,7 +24,6 @@ public class RoomCtrl : MonoBehaviour {
     //Get the components and object needed.
     display = GetComponentInChildren<Text>();
     aSource = GetComponentInChildren<AudioSource>();
-    if(roomPrefab == null) roomPrefab = Resources.Load("Room", typeof(GameObject)) as GameObject;
   }
 
   //===================================================================================================================
