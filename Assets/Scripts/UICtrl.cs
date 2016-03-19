@@ -5,7 +5,8 @@ using UnityEngine.UI;
 public class UICtrl : MonoBehaviour {
 
   private Image bg;
-  private Text title, me, star, error, tutorial;
+  private Text title, me, error, tutorial;
+  private Image star;
 
   private bool ready;
   public bool Ready {set{ready = value;}}
@@ -17,7 +18,7 @@ public class UICtrl : MonoBehaviour {
     bg = GetComponentInChildren<Image>();
     title = transform.Find("Background/Title").GetComponent<Text>();
     me = transform.Find("Background/Me").GetComponent<Text>();
-    star = transform.Find("Background/Star").GetComponent<Text>();
+    star = transform.Find("Background/Star").GetComponent<Image>();
     error = transform.Find("Background/Error").GetComponent<Text>();
     tutorial = transform.Find("Background/Tutorial").GetComponent<Text>();
 

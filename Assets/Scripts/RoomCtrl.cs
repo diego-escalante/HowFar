@@ -1,14 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
-using UnityEngine.UI;
-using System;
 
 public class RoomCtrl : MonoBehaviour {
 
   private int roomNumber;                                 //The room number.
-  private DateTime endTime;                               //The end time for this timer.
+  private System.DateTime endTime;                        //The end time for this timer.
   private bool timeReached = false;                       //Has this timer reached 0?
-  private Text display;                                   //The countdown display.
+  private UnityEngine.UI.Text display;                    //The countdown display.
   [SerializeField] private GameObject roomPrefab;         //The room prefab.
 
   private AudioSource aSource;                            //Audio source for the tic tocs and door ding.
@@ -22,13 +20,13 @@ public class RoomCtrl : MonoBehaviour {
     TimeCtrl.Tick += tick;
 
     //Get the components and object needed.
-    display = GetComponentInChildren<Text>();
+    display = GetComponentInChildren<UnityEngine.UI.Text>();
     aSource = GetComponentInChildren<AudioSource>();
   }
 
   //===================================================================================================================
 
-  private void tick(DateTime currentTime) {
+  private void tick(System.DateTime currentTime) {
     
     //If we have already reached the end date, just flash the display.
     if(timeReached) display.gameObject.SetActive(currentTime.Second % 2 == 0);
@@ -42,9 +40,9 @@ public class RoomCtrl : MonoBehaviour {
 
   //===================================================================================================================
 
-  private void updateDisplay(DateTime currentTime){
+  private void updateDisplay(System.DateTime currentTime){
     //Calculate the time left, get a string from that.
-    TimeSpan timeLeft = endTime.Subtract(currentTime);
+    System.TimeSpan timeLeft = endTime.Subtract(currentTime);
     string text = timeLeft.ToString();
 
     //Modify the string for pretty display.
@@ -64,7 +62,7 @@ public class RoomCtrl : MonoBehaviour {
 
   //===================================================================================================================
 
-  private void open(bool instantly, DateTime currentTime){
+  private void open(bool instantly, System.DateTime currentTime){
     //Remember the timer in this room has reached 0.
     timeReached = true;
 
@@ -91,7 +89,7 @@ public class RoomCtrl : MonoBehaviour {
   }
   //===================================================================================================================
 
-  public void setEndTime(DateTime newTime, DateTime currentTime){
+  public void setEndTime(System.DateTime newTime, System.DateTime currentTime){
     endTime = newTime;
     if(currentTime > endTime) open(true, currentTime);
   }

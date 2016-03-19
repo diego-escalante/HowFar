@@ -1,17 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
 
 public class TimeCtrl : MonoBehaviour {
 
-  private DateTime currentTime;
+  private System.DateTime currentTime;
   
-  public delegate void Del(DateTime currentTime);
+  public delegate void Del(System.DateTime currentTime);
   public static event Del Tick;
 
   //===================================================================================================================
 
-  public void setCurrentTime(DateTime newTime) {
+  public void setCurrentTime(System.DateTime newTime) {
     currentTime = newTime;
     StartCoroutine(SecondLoop());
   }

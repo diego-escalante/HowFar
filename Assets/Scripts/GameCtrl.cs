@@ -1,8 +1,5 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System;
-using UnityEngine.UI;
-using System.Text.RegularExpressions;
 
 public class GameCtrl : MonoBehaviour {
 
@@ -17,9 +14,11 @@ public class GameCtrl : MonoBehaviour {
 
     WWW www;
 
+    // yield return new WaitForSeconds(30);
+
     // Try to GET the current time from the internet.
     do {
-      www = new WWW("http://www.timeapi.org/utc/now");
+      www = new WWW("heytherediego.com/time");
       yield return www;
     } while(!string.IsNullOrEmpty(www.error) && !testString(www.text));
 
@@ -32,9 +31,9 @@ public class GameCtrl : MonoBehaviour {
     string currentDate = www.text.Substring(0, www.text.IndexOf("+"));
 
     //Set up current time and end time.
-    DateTime currentTime = DateTime.Parse(currentDate);
+    System.DateTime currentTime = System.DateTime.Parse(currentDate);
     // DateTime currentTime = new DateTime(2016, 5, 8, 15, 14, 40);
-    DateTime startTime = new DateTime(1991, 5, 8, 15, 15, 0);
+    System.DateTime startTime = new System.DateTime(1991, 5, 8, 15, 15, 0);
 
     //Build the first room.
     GameObject r = Instantiate(roomPrefab, Vector3.zero, Quaternion.identity) as GameObject;
@@ -52,7 +51,8 @@ public class GameCtrl : MonoBehaviour {
   //===================================================================================================================
 
   private bool testString(string s) {
-    Regex rgx = new Regex(@"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+00:00$");
+    System.Text.RegularExpressions.Regex rgx = 
+      new System.Text.RegularExpressions.Regex(@"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+00:00$");
     return rgx.IsMatch(s);
   }
 
