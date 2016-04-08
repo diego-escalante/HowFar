@@ -14,7 +14,6 @@ public class TimeCtrl : MonoBehaviour {
 
   public void setCurrentTime(System.DateTime newTime) {
     currentTime = newTime;
-    print("Time Set: " + newTime);
     if(!loopStarted) {
       loopStarted = true;
       StartCoroutine(SecondLoop());
