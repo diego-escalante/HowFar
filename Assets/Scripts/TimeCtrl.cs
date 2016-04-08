@@ -4,15 +4,21 @@ using System.Collections;
 public class TimeCtrl : MonoBehaviour {
 
   private System.DateTime currentTime;
+  private bool loopStarted = false;
   
   public delegate void Del(System.DateTime currentTime);
   public static event Del Tick;
+  public System.DateTime CurrentTime {get{return currentTime;}}
 
   //===================================================================================================================
 
   public void setCurrentTime(System.DateTime newTime) {
     currentTime = newTime;
-    StartCoroutine(SecondLoop());
+    print("Time Set: " + newTime);
+    if(!loopStarted) {
+      loopStarted = true;
+      StartCoroutine(SecondLoop());
+    }
   }
 
   //===================================================================================================================

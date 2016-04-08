@@ -14,8 +14,7 @@ public class MoveCtrl : MonoBehaviour {
 
   //===================================================================================================================
 
-  private void Start() {
-
+  private void Awake() {
     rb = GetComponent<Rigidbody>();
     head = transform.GetChild(0);
   }

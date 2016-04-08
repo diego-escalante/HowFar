@@ -7,7 +7,6 @@ public class InputCtrl : MonoBehaviour {
   public delegate void InputAxis(float f);
   public delegate void InputAxes(float x, float z);
 
-  public static event InputButton cancelPressed;
   public static event InputButton mouseClick;
   
   public static event InputAxes moveAxes;
@@ -18,7 +17,6 @@ public class InputCtrl : MonoBehaviour {
   //===================================================================================================================
 
   private void Update() {
-    if(Input.GetButtonDown("Cancel") && cancelPressed != null) cancelPressed();
     if(Input.GetButtonDown("mouseClick") && mouseClick != null) mouseClick();
 
     if(moveAxes != null) moveAxes(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));

@@ -4,23 +4,27 @@ using System.Collections;
 public class GameCtrl : MonoBehaviour {
 
   [SerializeField] private GameObject roomPrefab;
-  private bool isPaused = false;
+  private bool isPaused = true;
+  private bool focusDisabled = true;
   private MoveCtrl move;
   private UnityStandardAssets.ImageEffects.BlurOptimized blur;
+
+  private const string URL = "/time";
 
   //===================================================================================================================
 
   private IEnumerator Start() {
 
-    WWW www;
+    //Try to GET the current time.
+    WWW www = new WWW(URL);
+    yield return www;
 
-    // yield return new WaitForSeconds(30);
-
-    // Try to GET the current time from the internet.
-    do {
-      www = new WWW("heytherediego.com/time");
+    //If get fails, try again every 3 seconds.
+    while(!string.IsNullOrEmpty(www.error) || !testString(www.text)) {
+      yield return new WaitForSeconds(3);
+      www = new WWW(URL);
       yield return www;
-    } while(!string.IsNullOrEmpty(www.error) && !testString(www.text));
+    }
 
     //Get some components.
     GameObject g = GameObject.FindWithTag("Player");
@@ -32,7 +36,6 @@ public class GameCtrl : MonoBehaviour {
 
     //Set up current time and end time.
     System.DateTime currentTime = System.DateTime.Parse(currentDate);
-    // DateTime currentTime = new DateTime(2016, 5, 8, 15, 14, 40);
     System.DateTime startTime = new System.DateTime(1991, 5, 8, 15, 15, 0);
 
     //Build the first room.
@@ -50,6 +53,20 @@ public class GameCtrl : MonoBehaviour {
 
   //===================================================================================================================
 
+  private IEnumerator updateTime(){
+    WWW www = new WWW(URL);
+    yield return www;
+
+    //If the string is valid.
+    if(string.IsNullOrEmpty(www.error) && testString(www.text)) {
+      string currentDate = www.text.Substring(0, www.text.IndexOf("+"));
+      System.DateTime currentTime = System.DateTime.Parse(currentDate);
+      GetComponent<TimeCtrl>().setCurrentTime(currentTime);
+    }
+  }
+
+  //===================================================================================================================
+
   private bool testString(string s) {
     System.Text.RegularExpressions.Regex rgx = 
       new System.Text.RegularExpressions.Regex(@"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+00:00$");
@@ -59,27 +76,54 @@ public class GameCtrl : MonoBehaviour {
   //===================================================================================================================
 
   public void enablePause() {
-    InputCtrl.cancelPressed += pause;
-    InputCtrl.mouseClick += clickUnpause;
+    focusDisabled = false;
+    InputCtrl.mouseClick += pause;
+    StartCoroutine(pauseCheck());
   }
 
   //===================================================================================================================
 
   private void pause() {
-    isPaused = !isPaused;
-
-    StartCoroutine(smoothPause(isPaused));
+    if(Cursor.lockState != CursorLockMode.Locked) {
+      Cursor.lockState = CursorLockMode.Locked;
+      Cursor.visible = false;
+    }
+    else Cursor.lockState = CursorLockMode.None;
   }
 
   //===================================================================================================================
 
-  private void clickUnpause() {
-    if(isPaused) pause();
+  private void OnApplicationFocus(bool onFocus) {
+    if(focusDisabled) return;
+
+    //If focus is regained, update time if possible.
+    if(onFocus) StartCoroutine(updateTime());
+
+    //If we are not paused but focus is lost, pause. 
+    else if(!isPaused) StartCoroutine(smoothPause(true));
+
+  }
+
+  //===================================================================================================================
+
+  private IEnumerator pauseCheck() {
+    while(true) {
+      //If cursor is free, pause.
+      if(Cursor.lockState != CursorLockMode.Locked && !isPaused)
+        StartCoroutine(smoothPause(true));
+
+      //If cursor is locked, unpause.
+      else if(Cursor.lockState == CursorLockMode.Locked && isPaused)
+        StartCoroutine(smoothPause(false));
+
+      yield return null;
+    }
   }
 
   //===================================================================================================================
 
   private IEnumerator smoothPause(bool paused=false) {
+    isPaused = paused;
     float initialValue = blur.blurSize;
     float initialVolValue = AudioListener.volume;
     float finalValue = paused ? 3 : 0;
@@ -91,7 +135,6 @@ public class GameCtrl : MonoBehaviour {
 
     move.enabled = !paused;
     Cursor.visible = paused;  
-    Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
 
     while(elapsedTime < duration) {
       elapsedTime += Time.deltaTime;

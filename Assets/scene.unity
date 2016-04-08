@@ -233,6 +233,7 @@ Canvas:
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
+  m_SortingBucketNormalizedSize: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -521,7 +522,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Diego Escalante
+  m_Text: Created By Diego Escalante
 --- !u!222 &639072713
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1187,7 +1188,7 @@ MonoBehaviour:
 
     Mouse to look.
 
-    Esc to pause.'
+    Click to pause.'
 --- !u!222 &1310174413
 CanvasRenderer:
   m_ObjectHideFlags: 0

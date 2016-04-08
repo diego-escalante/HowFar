@@ -22,6 +22,13 @@ public class RoomCtrl : MonoBehaviour {
     //Get the components and object needed.
     display = GetComponentInChildren<UnityEngine.UI.Text>();
     aSource = GetComponentInChildren<AudioSource>();
+    // tick(GameObject.FindWithTag("GameController").GetComponent<TimeCtrl>().CurrentTime);
+  }
+
+  //===================================================================================================================
+
+  private void Start() {
+    tick(GameObject.FindWithTag("GameController").GetComponent<TimeCtrl>().CurrentTime);
   }
 
   //===================================================================================================================
@@ -31,8 +38,11 @@ public class RoomCtrl : MonoBehaviour {
     //If we have already reached the end date, just flash the display.
     if(timeReached) display.gameObject.SetActive(currentTime.Second % 2 == 0);
 
-    //else if we just ticked down to 0? 
-    else if(currentTime >= endTime) open(false, currentTime);
+    //else if we just ticked down to 0, open the door. 
+    else if(currentTime == endTime) open(false, currentTime);
+
+    //else if we somehow missed it, and we are past 0, have the door instantly open.
+    else if(currentTime > endTime) open(true, currentTime);
 
     //else update display.
     else updateDisplay(currentTime);
@@ -71,6 +81,7 @@ public class RoomCtrl : MonoBehaviour {
     RoomCtrl rCtrl = r.GetComponent<RoomCtrl>();
     rCtrl.setName(roomNumber + 1);
     rCtrl.setEndTime(endTime.AddYears(1), currentTime);
+    // rCtrl.tick(currentTime);
 
     //Open this room's door.
     if(instantly) GetComponentInChildren<Animator>().SetTrigger("AlreadyOpen");

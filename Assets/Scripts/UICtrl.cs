@@ -9,6 +9,7 @@ public class UICtrl : MonoBehaviour {
   private Image star;
 
   private bool ready;
+  private bool click;
   public bool Ready {set{ready = value;}}
 
   //===================================================================================================================
@@ -35,8 +36,8 @@ public class UICtrl : MonoBehaviour {
     StartCoroutine(FadeIn(title, 2));
     yield return new WaitForSeconds(3);
 
-    StartCoroutine(FadeIn(me, 0.1f));
-    yield return new WaitForSeconds(2);
+    StartCoroutine(FadeIn(me, 0.2f));
+    yield return new WaitForSeconds(0.2f);
 
     //Wait until the game controller says the game is ready.
     float elapsedTime = 0;
@@ -59,12 +60,30 @@ public class UICtrl : MonoBehaviour {
       yield return null;
     }
 
+    if(star.gameObject.activeSelf) StartCoroutine(FadeIn(star, 2, true));
+
+    //Prompt player to click and start.
+    if(error.gameObject.activeSelf) {
+      // error.gameObject.SetActive(true);
+      StartCoroutine(FadeIn(error, 0.2f, true));
+      yield return new WaitForSeconds(0.2f);
+      error.text = "Click.";
+      StartCoroutine(FadeIn(error, 0.2f));
+    }
+    else {
+      error.gameObject.SetActive(true);
+      error.text = "Click.";
+      StartCoroutine(FadeIn(error, 0.2f));
+    }
+    
+    InputCtrl.mouseClick += setClick;
+    while(!click) {yield return null;}
+    InputCtrl.mouseClick -= setClick;
+
     StartCoroutine(FadeIn(title, 2, true));
     StartCoroutine(FadeIn(me, 2, true));
-    if(star.gameObject.activeSelf) StartCoroutine(FadeIn(star, 2, true));
-    if(error.gameObject.activeSelf) StartCoroutine(FadeIn(error, 2, true));
-    Cursor.lockState = CursorLockMode.Locked;
-    Cursor.visible = false;
+    StartCoroutine(FadeIn(error, 2, true));
+
     yield return new WaitForSeconds(2);
 
     StartCoroutine(FadeIn(bg, 2, true));
@@ -106,9 +125,20 @@ public class UICtrl : MonoBehaviour {
       yield return null;
     }
   }
+
+
+  //===================================================================================================================
+
+  private void setClick() {
+    click = true;
+    Cursor.lockState = CursorLockMode.Locked;
+    if(Cursor.lockState == CursorLockMode.Locked) Cursor.visible = false;
+  }
 }
 
-////===================================================================================================================
+//=====================================================================================================================
+
+//EXTENSION, outside UICtrl.
 
 public static class Extensions {
   //Extension used for Image and Text to set their color's alpha component easily.
