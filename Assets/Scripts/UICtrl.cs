@@ -131,8 +131,9 @@ public class UICtrl : MonoBehaviour {
 
   private void setClick() {
     click = true;
-    Cursor.lockState = CursorLockMode.Locked;
-    if(Cursor.lockState == CursorLockMode.Locked) Cursor.visible = false;
+    GameObject.FindWithTag("GameController").GetComponent<GameCtrl>().initialLock();
+    // Cursor.lockState = CursorLockMode.Locked;
+    // if(Cursor.lockState == CursorLockMode.Locked) Cursor.visible = false;
   }
 }
 

@@ -4,10 +4,12 @@ using System.Collections;
 public class GameCtrl : MonoBehaviour {
 
   [SerializeField] private GameObject roomPrefab;
-  private bool isPaused = true;
+  private bool isPaused = false;
   private bool focusDisabled = true;
   private MoveCtrl move;
   private UnityStandardAssets.ImageEffects.BlurOptimized blur;
+
+  private bool asyncOngoing = false;
 
   private const string URL = "/time";
 
@@ -78,17 +80,30 @@ public class GameCtrl : MonoBehaviour {
   public void enablePause() {
     focusDisabled = false;
     InputCtrl.mouseClick += pause;
+    
     StartCoroutine(pauseCheck());
   }
 
   //===================================================================================================================
 
+  public void initialLock() {
+    StartCoroutine("asyncCursorLock", CursorLockMode.Locked);
+  }
+
+  //===================================================================================================================
+
   private void pause() {
-    if(Cursor.lockState != CursorLockMode.Locked) {
-      Cursor.lockState = CursorLockMode.Locked;
-      Cursor.visible = false;
-    }
-    else Cursor.lockState = CursorLockMode.None;
+    isPaused = !isPaused;
+    StopCoroutine("smoothPause");
+    StartCoroutine("smoothPause", isPaused);
+
+
+
+    // if(Cursor.lockState != CursorLockMode.Locked) {
+    //   Cursor.lockState = CursorLockMode.Locked;
+    //   // Cursor.visible = false;
+    // }
+    // else Cursor.lockState = CursorLockMode.None;
   }
 
   //===================================================================================================================
@@ -100,7 +115,7 @@ public class GameCtrl : MonoBehaviour {
     if(onFocus) StartCoroutine(updateTime());
 
     //If we are not paused but focus is lost, pause. 
-    else if(!isPaused) StartCoroutine(smoothPause(true));
+    else if(!isPaused) pause();
 
   }
 
@@ -109,12 +124,16 @@ public class GameCtrl : MonoBehaviour {
   private IEnumerator pauseCheck() {
     while(true) {
       //If cursor is free, pause.
-      if(Cursor.lockState != CursorLockMode.Locked && !isPaused)
-        StartCoroutine(smoothPause(true));
+      if(!asyncOngoing && !isPaused && Cursor.lockState != CursorLockMode.Locked) {
+        print("autopause");
+        pause();
+      }
+      // if(Cursor.lockState != CursorLockMode.Locked && !isPaused) pause();
 
-      //If cursor is locked, unpause.
-      else if(Cursor.lockState == CursorLockMode.Locked && isPaused)
-        StartCoroutine(smoothPause(false));
+      // //If cursor is locked, unpause.
+      // else if(Cursor.lockState == CursorLockMode.Locked && isPaused) {
+      //   StartCoroutine("smoothPause", false);
+      // }
 
       yield return null;
     }
@@ -123,7 +142,7 @@ public class GameCtrl : MonoBehaviour {
   //===================================================================================================================
 
   private IEnumerator smoothPause(bool paused=false) {
-    isPaused = paused;
+    // isPaused = paused;
     float initialValue = blur.blurSize;
     float initialVolValue = AudioListener.volume;
     float finalValue = paused ? 3 : 0;
@@ -134,7 +153,9 @@ public class GameCtrl : MonoBehaviour {
     if(paused) blur.enabled = true;
 
     move.enabled = !paused;
-    Cursor.visible = paused;  
+    if(!asyncOngoing) StartCoroutine("asyncCursorLock", paused ? CursorLockMode.None : CursorLockMode.Locked);
+    // Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
+    // Cursor.visible = !(Cursor.lockState == CursorLockMode.Locked);
 
     while(elapsedTime < duration) {
       elapsedTime += Time.deltaTime;
@@ -145,5 +166,26 @@ public class GameCtrl : MonoBehaviour {
     }
 
     if(!paused) blur.enabled = false;
+  }
+
+  //===================================================================================================================
+
+  private IEnumerator asyncCursorLock(CursorLockMode desiredMode) {
+    print("Begin async with desire mode: " + desiredMode);
+    asyncOngoing = true;
+
+    Cursor.lockState = desiredMode;
+
+    //Give a little time for the cursor to change lock state.
+    while(Cursor.lockState != desiredMode) {
+      // print("loop");
+      yield return null;
+    }
+
+    //Change the visibility of the cursor based on the lock state.
+    Cursor.visible = !(Cursor.lockState == CursorLockMode.Locked);
+
+    asyncOngoing = false;
+    print("End async with current mode: " + Cursor.lockState);
   }
 }
