@@ -96,14 +96,6 @@ public class GameCtrl : MonoBehaviour {
     isPaused = !isPaused;
     StopCoroutine("smoothPause");
     StartCoroutine("smoothPause", isPaused);
-
-
-
-    // if(Cursor.lockState != CursorLockMode.Locked) {
-    //   Cursor.lockState = CursorLockMode.Locked;
-    //   // Cursor.visible = false;
-    // }
-    // else Cursor.lockState = CursorLockMode.None;
   }
 
   //===================================================================================================================
@@ -124,17 +116,8 @@ public class GameCtrl : MonoBehaviour {
   private IEnumerator pauseCheck() {
     while(true) {
       //If cursor is free, pause.
-      if(!asyncOngoing && !isPaused && Cursor.lockState != CursorLockMode.Locked) {
-        print("autopause");
+      if(!asyncOngoing && !isPaused && Cursor.lockState != CursorLockMode.Locked)
         pause();
-      }
-      // if(Cursor.lockState != CursorLockMode.Locked && !isPaused) pause();
-
-      // //If cursor is locked, unpause.
-      // else if(Cursor.lockState == CursorLockMode.Locked && isPaused) {
-      //   StartCoroutine("smoothPause", false);
-      // }
-
       yield return null;
     }
   }
@@ -154,8 +137,6 @@ public class GameCtrl : MonoBehaviour {
 
     move.enabled = !paused;
     if(!asyncOngoing) StartCoroutine("asyncCursorLock", paused ? CursorLockMode.None : CursorLockMode.Locked);
-    // Cursor.lockState = paused ? CursorLockMode.None : CursorLockMode.Locked;
-    // Cursor.visible = !(Cursor.lockState == CursorLockMode.Locked);
 
     while(elapsedTime < duration) {
       elapsedTime += Time.deltaTime;
@@ -171,21 +152,16 @@ public class GameCtrl : MonoBehaviour {
   //===================================================================================================================
 
   private IEnumerator asyncCursorLock(CursorLockMode desiredMode) {
-    print("Begin async with desire mode: " + desiredMode);
     asyncOngoing = true;
 
     Cursor.lockState = desiredMode;
 
     //Give a little time for the cursor to change lock state.
-    while(Cursor.lockState != desiredMode) {
-      // print("loop");
-      yield return null;
-    }
+    while(Cursor.lockState != desiredMode) yield return null;
 
     //Change the visibility of the cursor based on the lock state.
     Cursor.visible = !(Cursor.lockState == CursorLockMode.Locked);
 
     asyncOngoing = false;
-    print("End async with current mode: " + Cursor.lockState);
   }
 }
