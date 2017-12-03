@@ -11,30 +11,35 @@ public class GameCtrl : MonoBehaviour {
 
   private bool asyncOngoing = false;
 
-  private const string URL = "/time";
+	private const string URL = "https://api.timezonedb.com/v2/get-time-zone?key=<YOUR_KEY_HERE>&format=json&by=zone&zone=America/Denver";
 
   //===================================================================================================================
 
   private IEnumerator Start() {
 
-    //Try to GET the current time.
-    WWW www = new WWW(URL);
+	//Try to GET the current time.
+	WWW www = new WWW(URL);
     yield return www;
 
-    //If get fails, try again every 3 seconds.
-    while(!string.IsNullOrEmpty(www.error) || !testString(www.text)) {
-      yield return new WaitForSeconds(3);
-      www = new WWW(URL);
-      yield return www;
-    }
+	//If get fails, try again every 3 seconds.
+	while(!string.IsNullOrEmpty(www.error)) {
+	  yield return new WaitForSeconds(3);
+	  www = new WWW(URL);
+	  yield return www;
+	}
 
-    //Get some components.
+	//Get some components.
     GameObject g = GameObject.FindWithTag("Player");
     move = g.GetComponent<MoveCtrl>();
     blur = g.GetComponentInChildren<UnityStandardAssets.ImageEffects.BlurOptimized>();
 
     // Prepare received data.
-    string currentDate = www.text.Substring(0, www.text.IndexOf("+"));
+    TimeJson timeJson = new TimeJson();
+    JsonUtility.FromJsonOverwrite(www.text, timeJson);
+
+    //Unix timestamp is seconds past epoch
+    System.DateTime dtDateTime = new System.DateTime(1970,1,1,0,0,0,0,System.DateTimeKind.Utc);
+	string currentDate = dtDateTime.AddSeconds( timeJson.timestamp-timeJson.gmtOffset ).ToLocalTime().ToString(); 
 
     //Set up current time and end time.
     System.DateTime currentTime = System.DateTime.Parse(currentDate);
@@ -60,19 +65,18 @@ public class GameCtrl : MonoBehaviour {
     yield return www;
 
     //If the string is valid.
-    if(string.IsNullOrEmpty(www.error) && testString(www.text)) {
-      string currentDate = www.text.Substring(0, www.text.IndexOf("+"));
+    if(string.IsNullOrEmpty(www.error)) {
+      //Prepare received data.
+      TimeJson timeJson = new TimeJson();
+      JsonUtility.FromJsonOverwrite(www.text, timeJson);
+
+      //Unix timestamp is seconds past epoch
+      System.DateTime dtDateTime = new System.DateTime(1970,1,1,0,0,0,0,System.DateTimeKind.Utc);
+      string currentDate = dtDateTime.AddSeconds( timeJson.timestamp-timeJson.gmtOffset ).ToLocalTime().ToString(); 
+
       System.DateTime currentTime = System.DateTime.Parse(currentDate);
       GetComponent<TimeCtrl>().setCurrentTime(currentTime);
-    }
-  }
-
-  //===================================================================================================================
-
-  private bool testString(string s) {
-    System.Text.RegularExpressions.Regex rgx = 
-      new System.Text.RegularExpressions.Regex(@"^\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d\+00:00$");
-    return rgx.IsMatch(s);
+	}
   }
 
   //===================================================================================================================
@@ -164,4 +168,9 @@ public class GameCtrl : MonoBehaviour {
 
     asyncOngoing = false;
   }
+
+	public class TimeJson {
+		public long timestamp;
+		public long gmtOffset;
+	}
 }
